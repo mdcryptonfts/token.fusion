@@ -11,6 +11,7 @@ void token::create( const name&   issuer,
                     const asset&  maximum_supply )
 {
     require_auth( get_self() );
+    check( issuer == DAPP_CONTRACT, ( "issuer must be " + DAPP_CONTRACT.to_string() ).c_str() );
 
     auto sym = maximum_supply.symbol;
     check( sym.is_valid(), "invalid symbol name" );
@@ -61,7 +62,7 @@ void token::issue( const name& issuer, const name& to, const asset& quantity, co
     add_balance( to, quantity, issuer );
 }
 
-void token::retire( const name& caller, const asset& quantity, const string& memo )
+void token::retire( const asset& quantity, const string& memo )
 {
     auto sym = quantity.symbol;
     check( sym.is_valid(), "invalid symbol name" );
@@ -72,11 +73,7 @@ void token::retire( const name& caller, const asset& quantity, const string& mem
     check( existing != statstable.end(), "token with symbol does not exist" );
     const auto& st = *existing;
 
-    require_auth( caller );
-
-    if( caller != DAPP_CONTRACT ){
-      check( false, "you don't have permission to retire tokens" );
-    }
+    require_auth( DAPP_CONTRACT );
 
     check( quantity.is_valid(), "invalid quantity" );
     check( quantity.amount > 0, "must retire positive quantity" );
@@ -87,7 +84,7 @@ void token::retire( const name& caller, const asset& quantity, const string& mem
        s.supply -= quantity;
     });
 
-    sub_balance( caller, quantity );
+    sub_balance( DAPP_CONTRACT, quantity );
 }
 
 void token::transfer( const name&    from,

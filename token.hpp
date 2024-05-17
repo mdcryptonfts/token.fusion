@@ -58,7 +58,7 @@ namespace eosio {
           * @param memo - the memo string to accompany the transaction.
           */
          [[eosio::action]]
-         void retire( const name& caller, const asset& quantity, const string& memo );
+         void retire( const asset& quantity, const string& memo );
 
          /**
           * Allows `from` account to transfer to `to` account the `quantity` tokens.
